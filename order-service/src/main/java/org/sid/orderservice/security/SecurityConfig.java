@@ -1,4 +1,4 @@
-package org.sid.inventoryservice.security;
+package org.sid.orderservice.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +18,7 @@ import java.util.Arrays;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
     private JwtAuthConverter jwtAuthConverter;
 
     public SecurityConfig(JwtAuthConverter jwtAuthConverter) {
@@ -25,27 +26,27 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-     return httpSecurity
-             .cors(Customizer.withDefaults())
-             .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-             .csrf(csrf->csrf.disable())
-             .headers(h->h.frameOptions(fo->fo.disable()))
-             .authorizeHttpRequests(ar->ar.requestMatchers("/h2-console/**").permitAll())
-             //.authorizeHttpRequests(ar->ar.requestMatchers("/api/products/**").hasAuthority("ADMIN"))
-             .authorizeHttpRequests(ar->ar.anyRequest().authenticated())
-             .oauth2ResourceServer(o2->o2.jwt(jwt->jwt.jwtAuthenticationConverter(jwtAuthConverter)))
-              .build();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable()) // Cross-Site Request Forgery
+                .headers(h -> h.frameOptions(fo -> fo.disable())) // pour autoriser H2 d'afficher ces frames car spring security ne l'autorise pas
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // type of authentication
+                .authorizeHttpRequests(ar -> ar.requestMatchers("/h2-console/**", "/swagger-ui.html", "/v3/**", "/swagger-ui/**").permitAll())
+                .authorizeHttpRequests(ar -> ar.anyRequest().authenticated())
+                .oauth2ResourceServer(o2 -> o2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter)))
+                .build();
     }
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins (Arrays.asList("*"));
-        configuration.setAllowedMethods (Arrays.asList("*"));
-        configuration.setAllowedHeaders (Arrays.asList("*"));
-        configuration.setExposedHeaders (Arrays.asList("*"));
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-}
+    }
 }
