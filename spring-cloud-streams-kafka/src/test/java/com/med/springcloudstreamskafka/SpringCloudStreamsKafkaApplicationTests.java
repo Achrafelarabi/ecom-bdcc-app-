@@ -1,4 +1,4 @@
-package com.med.springcloudstreamskafka;
+package org.sid.springcloudstreamskafka;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

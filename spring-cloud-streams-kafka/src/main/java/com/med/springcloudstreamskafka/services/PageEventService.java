@@ -1,6 +1,6 @@
-package com.med.springcloudstreamskafka.services;
+package org.sid.springcloudstreamskafka.services;
 
-import com.med.springcloudstreamskafka.entites.PageEvent;
+import corg.sid.springcloudstreamskafka.entites.PageEvent;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Grouped;
